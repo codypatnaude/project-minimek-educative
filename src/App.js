@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 import { Header, Container } from "semantic-ui-react";
-import TabBarContainer from "./features/tabs/TabBarContainer";
+import TabBar from "./features/tabs/TabBar";
 
 import UnitInfo from "./features/unitInfo/UnitInfo";
 import Pilots from "./features/pilots/Pilots";
@@ -27,7 +27,7 @@ function App() {
         </Header>
       </div>
       <Container>
-        <TabBarContainer tabs={tabs} size="massive"></TabBarContainer>
+        <TabBar tabs={tabs} size="massive"></TabBar>
       </Container>
     </div>
   );

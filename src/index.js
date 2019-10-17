@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "semantic-ui-css/semantic.css";
 import { Provider } from "react-redux";
-import configureStore from "./store/configureStore";
+import configureStore from "./app/store/configureStore";
 
 const store = configureStore();
 
@@ -12,7 +12,7 @@ const rootEl = document.getElementById("root");
 // Create a reusable render method that we can call more than once
 let render = () => {
   // Dynamically import our main App component, and render it
-  const App = require("./App").default;
+  const App = require("./app/layout/App").default;
 
   ReactDOM.render(
     <Provider store={store}>
@@ -27,7 +27,7 @@ if (process.env.NODE_ENV !== "production") {
     // Support hot reloading of components.
     // Whenever the App component file or one of its dependencies
     // is changed, re-import the updated component and re-render it
-    module.hot.accept("./App", () => {
+    module.hot.accept("./app/layout/App", () => {
       setTimeout(render);
     });
   }

@@ -12,7 +12,21 @@ const mapState = state => {
 
   const { Pilot } = session;
 
-  const pilots = Pilot.all().toRefArray();
+  const pilots = Pilot.all()
+    .toModelArray()
+    .map(pilotModel => {
+      const pilot = {
+        ...pilotModel.ref
+      };
+
+      const { mech } = pilotModel;
+
+      if (mech && mech.type) {
+        pilot.mechType = mech.type.id;
+      }
+
+      return pilot;
+    });
 
   return { pilots };
 };

@@ -6,6 +6,8 @@ import orm from "../../app/orm";
 
 import PilotsList from "./PilotsList";
 import PilotDetails from "./PilotDetails";
+import { selectCurrentPilot } from "./pilotsSelectors";
+import { selectPilot } from "./pilotsActions";
 
 const mapState = state => {
   const session = orm.session(state.entities);
@@ -28,27 +30,36 @@ const mapState = state => {
       return pilot;
     });
 
-  return { pilots };
+  const currentPilot = selectCurrentPilot(state);
+
+  return { pilots, currentPilot };
+};
+
+const actions = {
+  selectPilot
 };
 
 class Pilots extends Component {
   render() {
-    const { pilots = [] } = this.props;
-
-    // Use the first pilot as the "current" one for display, if available.
-    const currentPilot = pilots[0] || {};
+    const { pilots = [], selectPilot, currentPilot } = this.props;
+    const currentPilotEntry =
+      pilots.find(pilot => pilot.id === currentPilot) || {};
 
     return (
       <Segment>
         <Grid>
           <Grid.Column width={10}>
             <Header as="h3">Pilot List</Header>
-            <PilotsList pilots={pilots} />
+            <PilotsList
+              pilots={pilots}
+              onPilotClicked={selectPilot}
+              currentPilot={currentPilot}
+            />
           </Grid.Column>
           <Grid.Column width={6}>
             <Header as="h3">Pilot Details</Header>
             <Segment>
-              <PilotDetails pilot={currentPilot} />
+              <PilotDetails pilot={currentPilotEntry} />
             </Segment>
           </Grid.Column>
         </Grid>
@@ -57,4 +68,7 @@ class Pilots extends Component {
   }
 }
 
-export default connect(mapState)(Pilots);
+export default connect(
+  mapState,
+  actions
+)(Pilots);

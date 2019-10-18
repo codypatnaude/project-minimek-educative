@@ -1,5 +1,7 @@
 import React from "react";
 import { Form, Dropdown } from "semantic-ui-react";
+import { connect } from "react-redux";
+import orm from "../../app/orm";
 
 const RANKS = [
   { value: "Private", text: "Private" },
@@ -11,16 +13,27 @@ const RANKS = [
   { value: "Colonel", text: "Colonel" }
 ];
 
-const MECHS = [{ value: "WHM-6R", text: "Warhammer WHM-6R" }];
+const mapState = state => {
+  const session = orm.session(state.entities);
+  const { Mech } = session;
 
-const PilotDetails = ({ pilot = {} }) => {
+  const mechs = Mech.all()
+    .toRefArray()
+    .map(mech => {
+      return { value: mech.id, text: mech.type };
+    });
+
+  return { mechs };
+};
+
+const PilotDetails = ({ pilot = {}, mechs }) => {
   const {
     name = "",
     rank = "",
     age = "",
     gunnery = "",
     piloting = "",
-    mechType = ""
+    mech = ""
   } = pilot;
 
   return (
@@ -47,10 +60,10 @@ const PilotDetails = ({ pilot = {} }) => {
       </Form.Field>
       <Form.Field name="mech" width={16}>
         <label>Mech</label>
-        <Dropdown fluid selection options={MECHS} value={mechType} />
+        <Dropdown fluid selection options={mechs} value={mech} />
       </Form.Field>
     </Form>
   );
 };
 
-export default PilotDetails;
+export default connect(mapState)(PilotDetails);

@@ -2,6 +2,7 @@ import React from "react";
 import { Form, Dropdown } from "semantic-ui-react";
 import { connect } from "react-redux";
 import orm from "../../app/orm";
+import { selectCurrentPilot } from "./pilotsSelectors";
 
 const RANKS = [
   { value: "Private", text: "Private" },
@@ -15,7 +16,7 @@ const RANKS = [
 
 const mapState = state => {
   const session = orm.session(state.entities);
-  const { Mech } = session;
+  const { Mech, Pilot } = session;
 
   const mechs = Mech.all()
     .toRefArray()
@@ -23,7 +24,14 @@ const mapState = state => {
       return { value: mech.id, text: mech.type };
     });
 
-  return { mechs };
+  let pilot;
+  const currentPilot = selectCurrentPilot(state);
+
+  if (Pilot.idExists(currentPilot)) {
+    pilot = Pilot.withId(currentPilot).ref;
+  }
+
+  return { pilot, mechs };
 };
 
 const PilotDetails = ({ pilot = {}, mechs }) => {

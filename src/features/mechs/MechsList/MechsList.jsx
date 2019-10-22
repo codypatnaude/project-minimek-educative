@@ -1,15 +1,28 @@
 import React, { Component } from "react";
 import { Table } from "semantic-ui-react";
+import { connect } from "react-redux";
 
 import MechsListHeader from "./MechsListHeader";
 import MechsListRow from "./MechsListRow";
+import orm from "../../../app/orm";
 
-export default class MechsList extends Component {
+const mapToState = state => {
+  const session = orm.session(state.entities);
+  const { Mech } = session;
+
+  const mechs = Mech.all()
+    .toModelArray()
+    .map(mechModel => mechModel.getId());
+
+  return { mechs };
+};
+
+class MechsList extends Component {
   render() {
     const { mechs = [] } = this.props;
 
-    const mechRows = mechs.map(mech => (
-      <MechsListRow mech={mech} key={mech.id} />
+    const mechRows = mechs.map(mechID => (
+      <MechsListRow mechID={mechID} key={mechID} />
     ));
 
     return (
@@ -21,3 +34,5 @@ export default class MechsList extends Component {
     );
   }
 }
+
+export default connect(mapToState)(MechsList);

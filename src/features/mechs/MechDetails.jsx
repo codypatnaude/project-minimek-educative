@@ -1,10 +1,33 @@
 import React from "react";
 import { Form } from "semantic-ui-react";
+import orm from "../../app/orm";
+import { connect } from "react-redux";
 
-import { getWeightClass } from "./mechSelectors";
+import { getWeightClass, selectCurrentMech } from "./mechSelectors";
+
+const mapToState = state => {
+  const session = orm.session(state.entities);
+  const { Mech } = session;
+
+  const currentMech = selectCurrentMech(state);
+
+  let mech = { mechType: {} };
+  if (Mech.idExists(currentMech)) {
+    const mechModel = Mech.withId(currentMech);
+    mech = { ...mechModel.ref };
+
+    const { type } = mechModel;
+    if (type) {
+      mech.mechType = type;
+    }
+  }
+
+  return { mech };
+};
 
 const MechDetails = ({ mech = {} }) => {
-  const { id = "", name = "", type = "", weight = "" } = mech;
+  const { id = "", type = "", mechType = {} } = mech;
+  const { name = "", weight = "" } = mechType;
 
   const weightClass = getWeightClass(weight);
 
@@ -34,4 +57,4 @@ const MechDetails = ({ mech = {} }) => {
   );
 };
 
-export default MechDetails;
+export default connect(mapToState)(MechDetails);
